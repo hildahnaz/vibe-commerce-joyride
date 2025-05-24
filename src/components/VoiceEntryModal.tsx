@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Mic, MicOff, Wand2, Volume2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { NLPParser } from '@/services/nlpParser';
 
 interface VoiceEntryModalProps {
   isOpen: boolean;
@@ -30,17 +31,16 @@ const VoiceEntryModal: React.FC<VoiceEntryModalProps> = ({ isOpen, onClose, onAd
   });
   const { toast } = useToast();
 
-  // Simulate voice recognition (in real app, you'd use Web Speech API)
   const startListening = () => {
     setIsListening(true);
     
-    // Simulate voice input processing
     setTimeout(() => {
       const sampleTranscripts = [
-        "I sold 3 coffee cups for 15 dollars",
-        "Bought supplies for 25 dollars", 
-        "Received payment of 50 dollars for catering",
-        "Paid 30 dollars for ingredients"
+        "Sold 5 loaves of bread at 50 each today",
+        "Bought soap for 150",
+        "Sold 3 crates of eggs at 120 each",
+        "Spent 200 on transport yesterday",
+        "Received payment of 500 for catering service"
       ];
       
       const randomTranscript = sampleTranscripts[Math.floor(Math.random() * sampleTranscripts.length)];
@@ -51,32 +51,46 @@ const VoiceEntryModal: React.FC<VoiceEntryModalProps> = ({ isOpen, onClose, onAd
   };
 
   const parseVoiceInput = (text: string) => {
-    // Simple AI-like parsing (in real app, you'd use NLP/AI)
-    const lowerText = text.toLowerCase();
+    const parsed = NLPParser.parseNaturalLanguage(text);
     
-    // Extract amount
-    const amountMatch = text.match(/(\d+(\.\d{2})?)/);
-    const amount = amountMatch ? amountMatch[1] : '';
+    if (parsed) {
+      setParsedData({
+        type: parsed.type,
+        amount: parsed.amount.toString(),
+        description: parsed.item || text,
+        category: categorizeItem(parsed.item || '', parsed.type)
+      });
+      
+      toast({
+        title: "Voice Processed! 🎤",
+        description: "Smart AI has analyzed your input",
+      });
+    } else {
+      toast({
+        title: "Could not parse input",
+        description: "Please try speaking more clearly",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const categorizeItem = (item: string, type: 'income' | 'expense'): string => {
+    const lowerItem = item.toLowerCase();
     
-    // Determine type
-    const isIncome = lowerText.includes('sold') || lowerText.includes('received') || lowerText.includes('payment') || lowerText.includes('earned');
-    const type = isIncome ? 'income' : 'expense';
+    if (lowerItem.includes('bread') || lowerItem.includes('food') || lowerItem.includes('egg')) {
+      return 'Food & Beverage';
+    }
+    if (lowerItem.includes('soap') || lowerItem.includes('supplies')) {
+      return 'Supplies';
+    }
+    if (lowerItem.includes('transport') || lowerItem.includes('fuel')) {
+      return 'Transport';
+    }
+    if (lowerItem.includes('catering') || lowerItem.includes('service')) {
+      return 'Catering Services';
+    }
     
-    // Extract description
-    const description = text;
-    
-    // Categorize
-    let category = 'Other';
-    if (lowerText.includes('coffee') || lowerText.includes('food')) category = 'Food & Beverage';
-    else if (lowerText.includes('supplies') || lowerText.includes('ingredients')) category = 'Supplies';
-    else if (lowerText.includes('catering')) category = 'Catering Services';
-    
-    setParsedData({ type, amount, description, category });
-    
-    toast({
-      title: "Voice Processed! 🎤",
-      description: "Smart AI has analyzed your input",
-    });
+    return type === 'income' ? 'Sales' : 'Other';
   };
 
   const handleSubmit = () => {
@@ -201,7 +215,8 @@ const VoiceEntryModal: React.FC<VoiceEntryModalProps> = ({ isOpen, onClose, onAd
                   <SelectItem value="Food & Beverage">🍕 Food & Beverage</SelectItem>
                   <SelectItem value="Supplies">📦 Supplies</SelectItem>
                   <SelectItem value="Catering Services">🍽️ Catering Services</SelectItem>
-                  <SelectItem value="Marketing">📢 Marketing</SelectItem>
+                  <SelectItem value="Transport">🚗 Transport</SelectItem>
+                  <SelectItem value="Sales">💼 Sales</SelectItem>
                   <SelectItem value="Other">🎯 Other</SelectItem>
                 </SelectContent>
               </Select>

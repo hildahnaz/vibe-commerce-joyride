@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Camera, Upload, Sparkles, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { NLPParser } from '@/services/nlpParser';
 
 interface PhotoEntryModalProps {
   isOpen: boolean;
@@ -35,38 +36,33 @@ const PhotoEntryModal: React.FC<PhotoEntryModalProps> = ({ isOpen, onClose, onAd
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Create preview
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
 
-    // Simulate AI processing
     setIsProcessing(true);
     
     setTimeout(() => {
-      // Simulate extracted data from receipt
-      const mockExtractions = [
-        {
-          type: 'expense' as const,
-          amount: '23.45',
-          description: 'Coffee beans and supplies',
-          category: 'Supplies'
-        },
-        {
-          type: 'expense' as const,
-          amount: '45.99',
-          description: 'Restaurant supply purchase',
-          category: 'Food & Beverage'
-        },
-        {
-          type: 'income' as const,
-          amount: '127.50',
-          description: 'Catering service payment',
-          category: 'Catering Services'
-        }
+      // Simulate OCR text extraction and processing
+      const mockReceiptTexts = [
+        "Receipt Total: $23.45 Coffee beans and supplies",
+        "INVOICE Payment received $150.00 Catering services",
+        "PURCHASE Soap and cleaning materials $25.50",
+        "SALE 3 loaves bread at $8.00 each Total: $24.00",
+        "Transport costs fuel $45.75"
       ];
 
-      const randomExtraction = mockExtractions[Math.floor(Math.random() * mockExtractions.length)];
-      setExtractedData(randomExtraction);
+      const randomText = mockReceiptTexts[Math.floor(Math.random() * mockReceiptTexts.length)];
+      const parsed = NLPParser.parseNaturalLanguage(randomText);
+      
+      if (parsed) {
+        setExtractedData({
+          type: parsed.type,
+          amount: parsed.amount.toString(),
+          description: parsed.item || randomText,
+          category: categorizeItem(parsed.item || '', parsed.type)
+        });
+      }
+      
       setIsProcessing(false);
 
       toast({
@@ -74,6 +70,25 @@ const PhotoEntryModal: React.FC<PhotoEntryModalProps> = ({ isOpen, onClose, onAd
         description: "AI has extracted transaction details",
       });
     }, 2000);
+  };
+
+  const categorizeItem = (item: string, type: 'income' | 'expense'): string => {
+    const lowerItem = item.toLowerCase();
+    
+    if (lowerItem.includes('coffee') || lowerItem.includes('food') || lowerItem.includes('bread')) {
+      return 'Food & Beverage';
+    }
+    if (lowerItem.includes('soap') || lowerItem.includes('supplies') || lowerItem.includes('cleaning')) {
+      return 'Supplies';
+    }
+    if (lowerItem.includes('transport') || lowerItem.includes('fuel')) {
+      return 'Transport';
+    }
+    if (lowerItem.includes('catering') || lowerItem.includes('service')) {
+      return 'Catering Services';
+    }
+    
+    return type === 'income' ? 'Sales' : 'Other';
   };
 
   const handleSubmit = () => {
@@ -226,7 +241,8 @@ const PhotoEntryModal: React.FC<PhotoEntryModalProps> = ({ isOpen, onClose, onAd
                     <SelectItem value="Food & Beverage">🍕 Food & Beverage</SelectItem>
                     <SelectItem value="Supplies">📦 Supplies</SelectItem>
                     <SelectItem value="Catering Services">🍽️ Catering Services</SelectItem>
-                    <SelectItem value="Marketing">📢 Marketing</SelectItem>
+                    <SelectItem value="Transport">🚗 Transport</SelectItem>
+                    <SelectItem value="Sales">💼 Sales</SelectItem>
                     <SelectItem value="Other">🎯 Other</SelectItem>
                   </SelectContent>
                 </Select>
