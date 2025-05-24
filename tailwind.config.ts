@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,43 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom ProfitJoy palette
+				joy: {
+					50: '#fef7ee',
+					100: '#fdedd3',
+					200: '#fbd7a5',
+					300: '#f9bc6d',
+					400: '#f59e42',
+					500: '#f3851d',
+					600: '#e46f13',
+					700: '#bd5712',
+					800: '#974517',
+					900: '#7a3a16',
+				},
+				profit: {
+					50: '#f0fdf4',
+					100: '#dcfce7',
+					200: '#bbf7d0',
+					300: '#86efac',
+					400: '#4ade80',
+					500: '#22c55e',
+					600: '#16a34a',
+					700: '#15803d',
+					800: '#166534',
+					900: '#14532d',
+				},
+				expense: {
+					50: '#fef2f2',
+					100: '#fee2e2',
+					200: '#fecaca',
+					300: '#fca5a5',
+					400: '#f87171',
+					500: '#ef4444',
+					600: '#dc2626',
+					700: '#b91c1c',
+					800: '#991b1b',
+					900: '#7f1d1d',
 				}
 			},
 			borderRadius: {
@@ -70,25 +108,44 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
+				},
+				'profit-celebration': {
+					'0%': { transform: 'scale(1) rotate(0deg)', opacity: '1' },
+					'50%': { transform: 'scale(1.2) rotate(180deg)', opacity: '0.8' },
+					'100%': { transform: 'scale(1) rotate(360deg)', opacity: '1' }
+				},
+				'slide-up': {
+					'0%': { transform: 'translateY(100%)', opacity: '0' },
+					'100%': { transform: 'translateY(0)', opacity: '1' }
+				},
+				'pulse-glow': {
+					'0%, 100%': { boxShadow: '0 0 20px rgba(34, 197, 94, 0.3)' },
+					'50%': { boxShadow: '0 0 40px rgba(34, 197, 94, 0.6)' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-10px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'profit-celebration': 'profit-celebration 0.6s ease-in-out',
+				'slide-up': 'slide-up 0.3s ease-out',
+				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+				'float': 'float 3s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'joy-gradient': 'linear-gradient(135deg, #f3851d 0%, #f59e42 100%)',
+				'profit-gradient': 'linear-gradient(135deg, #22c55e 0%, #4ade80 100%)',
+				'expense-gradient': 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+				'hero-gradient': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
 			}
 		}
 	},
