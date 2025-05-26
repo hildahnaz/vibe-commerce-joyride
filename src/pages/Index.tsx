@@ -15,13 +15,15 @@ import {
   Target,
   Zap,
   Heart,
-  Star
+  Star,
+  Presentation
 } from 'lucide-react';
 import VoiceEntryModal from '@/components/VoiceEntryModal';
 import PhotoEntryModal from '@/components/PhotoEntryModal';
 import ProfitCelebration from '@/components/ProfitCelebration';
 import TransactionList from '@/components/TransactionList';
 import InsightsPanel from '@/components/InsightsPanel';
+import PitchDeck from '@/components/PitchDeck';
 import { useToast } from '@/hooks/use-toast';
 
 interface Transaction {
@@ -38,6 +40,7 @@ const Index = () => {
   const [showVoiceModal, setShowVoiceModal] = useState(false);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showPitchDeck, setShowPitchDeck] = useState(false);
   const [dailyTarget] = useState(200);
   const { toast } = useToast();
 
@@ -75,6 +78,10 @@ const Index = () => {
     });
   };
 
+  if (showPitchDeck) {
+    return <PitchDeck />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-orange-50">
       {/* Hero Header */}
@@ -89,6 +96,15 @@ const Index = () => {
             <p className="text-xl opacity-90 mb-6">
               Transform your business tracking into pure joy! ✨
             </p>
+            
+            {/* Pitch Deck Button */}
+            <Button
+              onClick={() => setShowPitchDeck(true)}
+              className="mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold"
+            >
+              <Presentation className="w-5 h-5 mr-2" />
+              View Pitch Deck
+            </Button>
             
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
